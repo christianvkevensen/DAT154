@@ -4,19 +4,35 @@
 #include <iostream>
 using namespace std;
 
+void SquareTwo(int* px, int* py) {
+	*px = *px * *px;
+	*py = *py * *py;
+}
 
-//void main()
-//{
-	//int t[] = { 0,1,4,9,16 };
+int main()
+{
+	//Example 2
+	/*char s[] = "Its a nice day, my house is on fire";
+	char* p = s;
+	int n = 0;
 
-	//int* pi = t;
+	for (; *p != 0; p++)
+	{
+		if (*p == 'e')
+			n++;
+	}
 
-	//cout << " Val : " << *pi << " Ptr Adr: " << pi << endl;
+	cout << "Number of e: " << n << endl;*/
 
-	//pi = pi + 1;
-	//cout << " Val : " << *pi << " Ptr Adr: " <<  pi << endl;
+	//Example 3
+	int x = 10;
+	int y = 20;
 
-//}
+	SquareTwo(&x, &y);
+
+	cout << "x2 = " << x << " y2 = " << y << endl;
+
+}
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
