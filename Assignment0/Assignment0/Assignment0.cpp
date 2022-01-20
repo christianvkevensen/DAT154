@@ -4,8 +4,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <algorithm>
 using namespace std;
+
+
 
 //int Myfunction(const char* p) {
 //    int i = 0;
@@ -18,6 +20,7 @@ using namespace std;
 
 
 int main() {
+
 	cout << "this is a test: ";
 
 	vector<string> words;
@@ -30,6 +33,10 @@ int main() {
 		if (word != "q")
 			words.push_back(word);
 	}
+
+	sort(words.begin(), words.end());
+
+
 	cout << "this vector contains : " << endl;
 
 	for (int i = 0; i < words.size(); i++)
