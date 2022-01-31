@@ -1,8 +1,8 @@
-// Oblig1.cpp : Defines the entry point for the application.
+// ForelesningPAINT.cpp : Defines the entry point for the application.
 //
 
 #include "framework.h"
-#include "Oblig1.h"
+#include "ForelesningPAINT.h"
 
 #define MAX_LOADSTRING 100
 
@@ -29,7 +29,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_OBLIG1, szWindowClass, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDC_FORELESNINGPAINT, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
     // Perform application initialization:
@@ -38,7 +38,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_OBLIG1));
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_FORELESNINGPAINT));
 
     MSG msg;
 
@@ -73,10 +73,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_OBLIG1));
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_FORELESNINGPAINT));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_OBLIG1);
+    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_FORELESNINGPAINT);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -125,11 +125,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    case WM_LBUTTONDOWN:
-        InvalidateRect(hWnd, NULL, FALSE);
-
-        break;
-
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -152,34 +147,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
-
-            RECT rect = { 20, 20, 150, 410 };
-            HBRUSH blackBrush = CreateSolidBrush(RGB(0, 0, 0));
-            HBRUSH grayBrush = CreateSolidBrush(RGB(58, 58, 58));
-            HBRUSH redBrush = CreateSolidBrush(RGB(255, 0, 0));
-            HBRUSH yellowBrush = CreateSolidBrush(RGB(255, 255, 0));
-            HBRUSH greenBrush = CreateSolidBrush(RGB(0, 128, 0));
-
-            FillRect(hdc, &rect, blackBrush);
-            HGDIOBJ hOrg = SelectObject(hdc, redBrush);
-            Ellipse(hdc, 20, 20, 150, 150);
-            hOrg = SelectObject(hdc, grayBrush);
-            Ellipse(hdc, 20, 150, 150, 280);
-
-            Ellipse(hdc, 20, 279, 150, 410);
-
-
-            Sleep(2);
-
-            DeleteObject(blackBrush);
-            DeleteObject(grayBrush);
-            DeleteObject(redBrush);
-            DeleteObject(yellowBrush);
-            DeleteObject(greenBrush);
-
-
             EndPaint(hWnd, &ps);
-
         }
         break;
     case WM_DESTROY:
