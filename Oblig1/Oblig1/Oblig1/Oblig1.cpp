@@ -10,6 +10,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+int counter = 0;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -126,10 +127,48 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_LBUTTONDOWN:
-        InvalidateRect(hWnd, NULL, FALSE);
+    {
+        SetTimer(hWnd, 0, 3000, (TIMERPROC)NULL);
 
         break;
+    }
+    case WM_TIMER:
+        switch (wParam)
+        {
+        case 0:
+            counter = (counter + 1) % 4;
+            InvalidateRect(hWnd, NULL, FALSE);
+            SetTimer(hWnd, 1, 1000, (TIMERPROC)NULL);
+            KillTimer(hWnd, 0);
 
+            break;
+        case 1:
+            counter = (counter + 1) % 4;
+            InvalidateRect(hWnd, NULL, FALSE);
+            SetTimer(hWnd, 2, 5000, (TIMERPROC)NULL);
+            KillTimer(hWnd, 1);
+
+            break;
+        case 2:
+            counter = (counter + 1) % 4;
+            InvalidateRect(hWnd, NULL, FALSE);
+            SetTimer(hWnd, 3, 1000, (TIMERPROC)NULL);
+            KillTimer(hWnd, 2);
+
+            break;
+        case 3:
+            counter = (counter + 1) % 4;
+            InvalidateRect(hWnd, NULL, FALSE);
+            SetTimer(hWnd, 0, 3000, (TIMERPROC)NULL);
+            KillTimer(hWnd, 3);
+
+            break;
+        default:
+            counter = (counter + 1) % 4;
+            InvalidateRect(hWnd, NULL, FALSE);
+            break;
+
+        }
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -153,21 +192,98 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
 
-            RECT rect = { 20, 20, 150, 410 };
             HBRUSH blackBrush = CreateSolidBrush(RGB(0, 0, 0));
             HBRUSH grayBrush = CreateSolidBrush(RGB(58, 58, 58));
             HBRUSH redBrush = CreateSolidBrush(RGB(255, 0, 0));
             HBRUSH yellowBrush = CreateSolidBrush(RGB(255, 255, 0));
             HBRUSH greenBrush = CreateSolidBrush(RGB(0, 128, 0));
 
-            FillRect(hdc, &rect, blackBrush);
-            HGDIOBJ hOrg = SelectObject(hdc, redBrush);
-            Ellipse(hdc, 20, 20, 150, 150);
-            hOrg = SelectObject(hdc, grayBrush);
-            Ellipse(hdc, 20, 150, 150, 280);
+            RECT screen;
+            GetClientRect(hWnd, &screen);
 
-            Ellipse(hdc, 20, 279, 150, 410);
+            RECT vei1 = { 0, screen.bottom/3, screen.right, screen.bottom/2 };
+            FillRect(hdc, &vei1, blackBrush);
+            RECT vei2 = {500, screen.top / 2, 600, screen.bottom};
+            FillRect(hdc, &vei2, blackBrush);
+            RECT rect = { vei2.right + 10, screen.top, vei2.right+100, vei1.top-10 };
+            RECT rect2 = { vei2.left - 10, vei1.bottom+10, vei2.left - 100, vei1.bottom + 200 };
 
+
+            switch (counter)
+            {
+            case 0:
+            {
+                FillRect(hdc, &rect, blackBrush);
+                FillRect(hdc, &rect2, blackBrush);
+
+                HGDIOBJ hOrg = SelectObject(hdc, redBrush);
+                Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom/3);
+
+                hOrg = SelectObject(hdc, grayBrush);
+                Ellipse(hdc, rect.left, rect.bottom/3, rect.right, rect.bottom * 0.67);
+                Ellipse(hdc, rect.left, rect.bottom*0.67, rect.right, rect.bottom);
+
+                Ellipse(hdc, rect2.left, rect2.top, rect2.right, rect2.bottom-125);
+                Ellipse(hdc, rect2.left, rect2.bottom-125, rect2.right, rect2.bottom - 65);
+                hOrg = SelectObject(hdc, greenBrush);
+                Ellipse(hdc, rect2.left, rect2.bottom - 65, rect2.right, rect2.bottom);
+
+
+
+                break;
+            }
+            case 1:
+            {
+                FillRect(hdc, &rect, blackBrush);
+                HGDIOBJ hOrg = SelectObject(hdc, redBrush);
+                Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom / 3);
+                hOrg = SelectObject(hdc, yellowBrush);
+                Ellipse(hdc, rect.left, rect.bottom / 3, rect.right, rect.bottom * 0.67);
+                Ellipse(hdc, rect2.left, rect2.bottom - 125, rect2.right, rect2.bottom - 65);
+                hOrg = SelectObject(hdc, grayBrush);
+                Ellipse(hdc, rect.left, rect.bottom * 0.67, rect.right, rect.bottom);
+
+                Ellipse(hdc, rect2.left, rect2.top, rect2.right, rect2.bottom - 125);
+                Ellipse(hdc, rect2.left, rect2.bottom - 65, rect2.right, rect2.bottom);
+                break;
+            }
+            case 2: 
+            {
+                FillRect(hdc, &rect, blackBrush);
+                HGDIOBJ hOrg = SelectObject(hdc, grayBrush);
+                Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom / 3);
+                Ellipse(hdc, rect.left, rect.bottom / 3, rect.right, rect.bottom * 0.67);
+                Ellipse(hdc, rect2.left, rect2.bottom - 125, rect2.right, rect2.bottom - 65);
+                Ellipse(hdc, rect2.left, rect2.bottom - 65, rect2.right, rect2.bottom);
+                hOrg = SelectObject(hdc, greenBrush);
+                Ellipse(hdc, rect.left, rect.bottom * 0.67, rect.right, rect.bottom);
+
+                hOrg = SelectObject(hdc, redBrush);
+                Ellipse(hdc, rect2.left, rect2.top, rect2.right, rect2.bottom - 125);
+                
+                break;
+            }
+            case 3:
+            {
+                FillRect(hdc, &rect, blackBrush);
+                HGDIOBJ hOrg = SelectObject(hdc, grayBrush);
+                Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom / 3);
+                Ellipse(hdc, rect.left, rect.bottom * 0.67, rect.right, rect.bottom);
+                Ellipse(hdc, rect2.left, rect2.bottom - 65, rect2.right, rect2.bottom);
+
+                hOrg = SelectObject(hdc, yellowBrush);
+                Ellipse(hdc, rect.left, rect.bottom / 3, rect.right, rect.bottom * 0.67);
+                Ellipse(hdc, rect2.left, rect2.bottom - 125, rect2.right, rect2.bottom - 65);
+
+                hOrg = SelectObject(hdc, redBrush);
+
+                Ellipse(hdc, rect2.left, rect2.top, rect2.right, rect2.bottom - 125);
+                break;
+            }
+           
+            default:
+                break;
+            }
 
             Sleep(2);
 
@@ -184,6 +300,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
+        KillTimer(hWnd, 0);
+        KillTimer(hWnd, 1);
+        KillTimer(hWnd, 2);
+        KillTimer(hWnd, 3);
+
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
