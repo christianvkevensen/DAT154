@@ -6,11 +6,71 @@
 
 #define MAX_LOADSTRING 100
 
+class Car
+{
+public:
+    int n;
+    int x, y;
+    Car(int _n, int _x, int _y) : n(_n), x(_x), y(_y)
+    {
+    }
+    void Draw(HDC hdc)
+    {
+        /*Ellipse(hdc, x, y, x + 10, y + 10);
+        Ellipse(hdc, x + 20, y, x + 30, y + 10);*/
+        Rectangle(hdc, x, y -10, x + 10, y);
+    }
+};
+class CarList
+{
+public:
+    Car* t[1000];
+    int m_i;
+    CarList()
+    {
+        m_i = 0;
+    }
+    ~CarList()
+    {
+        Clear();
+    }
+    void push(Car* pCar)
+    {
+        t[m_i++] = pCar;
+    }
+    void Draw(HDC hdc)
+    {
+        for (int k = 0; k < m_i; k++)
+            t[k]->Draw(hdc);
+
+    }
+    void MoveW(int dx)
+    {
+        for (int k = 0; k < m_i; k++)
+            t[k]->x += dx;
+    }
+    void MoveN(int dy)
+    {
+        for (int k = 0; k < m_i; k++)
+            t[k]->y += dy;
+    }
+    void Clear()
+    {
+        for (int k = 0; k < m_i; k++)
+            delete t[k];
+        m_i = 0;
+    }
+};
+
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 int counter = 0;
+int n = 0;
+static CarList carlistN, carlistW;
+
+
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -126,9 +186,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+
+    case WM_CREATE:
+        SetTimer(hWnd, 0, 3000, (TIMERPROC)NULL);
+        break;
+
     case WM_LBUTTONDOWN:
     {
-        SetTimer(hWnd, 0, 3000, (TIMERPROC)NULL);
+        RECT screen;
+        GetClientRect(hWnd, &screen);
+
+        carlistW.push(new Car(n++, screen.left, screen.bottom / 2));
+
+        break;
+    }
+    case WM_RBUTTONDOWN:
+    {
+        RECT screen;
+        GetClientRect(hWnd, &screen);
+
+        carlistN.push(new Car(n++, screen.right/2, screen.top));
 
         break;
     }
@@ -304,6 +381,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         KillTimer(hWnd, 1);
         KillTimer(hWnd, 2);
         KillTimer(hWnd, 3);
+        carlistN.Clear();
+        carlistW.Clear();
 
         break;
     default:
