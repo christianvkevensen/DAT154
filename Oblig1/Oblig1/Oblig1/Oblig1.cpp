@@ -195,9 +195,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         RECT screen;
         GetClientRect(hWnd, &screen);
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
 
-        carlistW.push(new Car(n++, screen.left, screen.bottom / 2));
-
+        carlistW.push(new Car(n++, screen.left, screen.top + 20));
+        carlistW.Draw(hdc);
+        carlistW.MoveW(10);
         break;
     }
     case WM_RBUTTONDOWN:
@@ -206,7 +209,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         GetClientRect(hWnd, &screen);
 
         carlistN.push(new Car(n++, screen.right/2, screen.top));
-
+        
         break;
     }
     case WM_TIMER:
