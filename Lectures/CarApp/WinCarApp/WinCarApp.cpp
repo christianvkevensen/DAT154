@@ -16,8 +16,6 @@ public:
     }
     void Draw(HDC hdc)
     {
-        Ellipse(hdc, x, y, x + 10, y + 10);
-        Ellipse(hdc, x+20, y, x + 30, y + 10);
         Rectangle(hdc, x, y - 10, x + 30,y);
 
         //cout << n << ": ()==()" << endl;
@@ -42,7 +40,8 @@ public:
             t[k]->Draw(hdc); //  same as (*t[m_i]).Draw();
     }
     void Move(int x) {
-
+        for (int k = 0; k < m_i; k++)
+            t[k]->x += x;
     }
     void Clear()
     {
@@ -154,6 +153,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONDOWN:
     {
         carlist.push(new Car(n++, x, y));
+        carlist.Move(10);
         x = x + 100;
         InvalidateRect(hWnd, 0, true);
         break;

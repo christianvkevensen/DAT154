@@ -184,6 +184,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static int n = 1;
+    static int x = 10, y = 10;
     switch (message)
     {
 
@@ -193,14 +195,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_LBUTTONDOWN:
     {
-        RECT screen;
-        GetClientRect(hWnd, &screen);
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hWnd, &ps);
-
-        carlistW.push(new Car(n++, screen.left, screen.top + 20));
-        carlistW.Draw(hdc);
+        carlistW.push(new Car(n++, x, y));
         carlistW.MoveW(10);
+        
+        InvalidateRect(hWnd, 0, true);
         break;
     }
     case WM_RBUTTONDOWN:
@@ -213,17 +211,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     case WM_TIMER:
+
         switch (wParam)
         {
         case 0:
             counter = (counter + 1) % 4;
+            SetTimer(hWnd, 4, 10, (TIMERPROC)NULL);
+
             InvalidateRect(hWnd, NULL, FALSE);
             SetTimer(hWnd, 1, 1000, (TIMERPROC)NULL);
             KillTimer(hWnd, 0);
+            KillTimer(hWnd, 4);
 
             break;
         case 1:
             counter = (counter + 1) % 4;
+            carlistW.MoveW(100);
             InvalidateRect(hWnd, NULL, FALSE);
             SetTimer(hWnd, 2, 5000, (TIMERPROC)NULL);
             KillTimer(hWnd, 1);
@@ -238,11 +241,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         case 3:
             counter = (counter + 1) % 4;
+            carlistW.MoveW(100);
             InvalidateRect(hWnd, NULL, FALSE);
             SetTimer(hWnd, 0, 3000, (TIMERPROC)NULL);
             KillTimer(hWnd, 3);
 
             break;
+        case 4:
+            carlistW.MoveW(100);
+            InvalidateRect(hWnd, NULL, FALSE);
+
+
         default:
             counter = (counter + 1) % 4;
             InvalidateRect(hWnd, NULL, FALSE);
@@ -280,7 +289,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             RECT screen;
             GetClientRect(hWnd, &screen);
-
+            HBRUSH hb = CreateSolidBrush(RGB(255, 0, 0));
+            HGDIOBJ hOrg = SelectObject(hdc, hb);
+            carlistW.Draw(hdc);
             RECT vei1 = { 0, screen.bottom/3, screen.right, screen.bottom/2 };
             FillRect(hdc, &vei1, blackBrush);
             RECT vei2 = {500, screen.top / 2, 600, screen.bottom};
@@ -307,8 +318,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 Ellipse(hdc, rect2.left, rect2.bottom-125, rect2.right, rect2.bottom - 65);
                 hOrg = SelectObject(hdc, greenBrush);
                 Ellipse(hdc, rect2.left, rect2.bottom - 65, rect2.right, rect2.bottom);
-
-
 
                 break;
             }
