@@ -185,18 +185,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static int n = 1;
-    static int x = 10, y = 10;
+    static int wx = 10, wy = 100;
     switch (message)
     {
 
     case WM_CREATE:
-        SetTimer(hWnd, 0, 3000, (TIMERPROC)NULL);
+        SetTimer(hWnd, 0, 100, (TIMERPROC)NULL);
+        SetTimer(hWnd, 1, 3005, (TIMERPROC)NULL);
+
         break;
 
     case WM_LBUTTONDOWN:
     {
-        carlistW.push(new Car(n++, x, y));
-        carlistW.MoveW(10);
+       
+        carlistW.push(new Car(n++, wx, wy));
         
         InvalidateRect(hWnd, 0, true);
         break;
@@ -207,57 +209,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         GetClientRect(hWnd, &screen);
 
         carlistN.push(new Car(n++, screen.right/2, screen.top));
-        
+        InvalidateRect(hWnd, 0, true);
+
         break;
     }
     case WM_TIMER:
-
         switch (wParam)
-        {
+        {    
         case 0:
-            counter = (counter + 1) % 4;
-            SetTimer(hWnd, 4, 10, (TIMERPROC)NULL);
-
-            InvalidateRect(hWnd, NULL, FALSE);
-            SetTimer(hWnd, 1, 1000, (TIMERPROC)NULL);
-            KillTimer(hWnd, 0);
-            KillTimer(hWnd, 4);
-
+            carlistW.MoveW(10);
+            carlistN.MoveN(10);
+            InvalidateRect(hWnd, 0, true);
             break;
+
         case 1:
             counter = (counter + 1) % 4;
-            carlistW.MoveW(100);
-            InvalidateRect(hWnd, NULL, FALSE);
-            SetTimer(hWnd, 2, 5000, (TIMERPROC)NULL);
-            KillTimer(hWnd, 1);
+            InvalidateRect(hWnd, 0, true);
 
             break;
-        case 2:
-            counter = (counter + 1) % 4;
-            InvalidateRect(hWnd, NULL, FALSE);
-            SetTimer(hWnd, 3, 1000, (TIMERPROC)NULL);
-            KillTimer(hWnd, 2);
-
-            break;
-        case 3:
-            counter = (counter + 1) % 4;
-            carlistW.MoveW(100);
-            InvalidateRect(hWnd, NULL, FALSE);
-            SetTimer(hWnd, 0, 3000, (TIMERPROC)NULL);
-            KillTimer(hWnd, 3);
-
-            break;
-        case 4:
-            carlistW.MoveW(100);
-            InvalidateRect(hWnd, NULL, FALSE);
-
 
         default:
-            counter = (counter + 1) % 4;
-            InvalidateRect(hWnd, NULL, FALSE);
             break;
-
         }
+        
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -324,6 +298,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case 1:
             {
                 FillRect(hdc, &rect, blackBrush);
+                FillRect(hdc, &rect2, blackBrush);
+
                 HGDIOBJ hOrg = SelectObject(hdc, redBrush);
                 Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom / 3);
                 hOrg = SelectObject(hdc, yellowBrush);
@@ -339,6 +315,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case 2: 
             {
                 FillRect(hdc, &rect, blackBrush);
+                FillRect(hdc, &rect2, blackBrush);
+
                 HGDIOBJ hOrg = SelectObject(hdc, grayBrush);
                 Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom / 3);
                 Ellipse(hdc, rect.left, rect.bottom / 3, rect.right, rect.bottom * 0.67);
@@ -355,6 +333,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case 3:
             {
                 FillRect(hdc, &rect, blackBrush);
+                FillRect(hdc, &rect2, blackBrush);
+
                 HGDIOBJ hOrg = SelectObject(hdc, grayBrush);
                 Ellipse(hdc, rect.left, rect.top, rect.right, rect.bottom / 3);
                 Ellipse(hdc, rect.left, rect.bottom * 0.67, rect.right, rect.bottom);
@@ -391,8 +371,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         KillTimer(hWnd, 0);
         KillTimer(hWnd, 1);
-        KillTimer(hWnd, 2);
-        KillTimer(hWnd, 3);
+       
         carlistN.Clear();
         carlistW.Clear();
 
