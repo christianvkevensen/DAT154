@@ -44,10 +44,32 @@ public:
             t[k]->Draw(hdc);
 
     }
-    void MoveW(int dx)
+    void MoveW(int dx, int counter)
     {
+        int grense = 400;
         for (int k = 0; k < m_i; k++)
-            t[k]->x += dx;
+                
+        
+            if (k == 0) {
+                if (counter  == 2 && (t[k]->x)-10 == 480) {
+                    
+                }
+                else {
+                    t[k]->x += dx;
+                }
+               
+            }
+            else if ((k > 0 ) && (t[k-1]->x) - (t[k]->x) <= 10) {
+
+            }
+            else {
+                if (counter == 2 && (t[k]->x) - 10 == 480) {
+
+                }
+                else {
+                    t[k]->x += dx;
+                }
+            }
     }
     void MoveN(int dy)
     {
@@ -185,7 +207,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static int n = 1;
-    static int wx = 10, wy = 100;
+    static int wx = 10, wy = 250;
+    static int nx = 550, ny = 0;
+    static int wStopp = 400;
     switch (message)
     {
 
@@ -197,7 +221,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_LBUTTONDOWN:
     {
-       
+        carlistN.push(new Car(n++, nx, ny));
         carlistW.push(new Car(n++, wx, wy));
         
         InvalidateRect(hWnd, 0, true);
@@ -217,7 +241,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (wParam)
         {    
         case 0:
-            carlistW.MoveW(10);
+            carlistW.MoveW(10,counter);
             carlistN.MoveN(10);
             InvalidateRect(hWnd, 0, true);
             break;
@@ -265,14 +289,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             GetClientRect(hWnd, &screen);
             HBRUSH hb = CreateSolidBrush(RGB(255, 0, 0));
             HGDIOBJ hOrg = SelectObject(hdc, hb);
-            carlistW.Draw(hdc);
             RECT vei1 = { 0, screen.bottom/3, screen.right, screen.bottom/2 };
             FillRect(hdc, &vei1, blackBrush);
             RECT vei2 = {500, screen.top / 2, 600, screen.bottom};
             FillRect(hdc, &vei2, blackBrush);
             RECT rect = { vei2.right + 10, screen.top, vei2.right+100, vei1.top-10 };
             RECT rect2 = { vei2.left - 10, vei1.bottom+10, vei2.left - 100, vei1.bottom + 200 };
-
+            carlistW.Draw(hdc);
+            carlistN.Draw(hdc);
 
             switch (counter)
             {
