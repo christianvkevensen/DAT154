@@ -3,7 +3,6 @@
 
 #include "framework.h"
 #include "Oblig1.h"
-
 #define MAX_LOADSTRING 100
 
 class Car
@@ -46,12 +45,12 @@ public:
     }
     void MoveW(int dx, int counter)
     {
-        int grense = 400;
+        int grense = 480;
         for (int k = 0; k < m_i; k++)
                 
         
             if (k == 0) {
-                if (counter  == 2 && (t[k]->x)-10 == 480) {
+                if (((counter == 3) || (counter == 2)) && (t[k]->x) - 10 == grense) {
                     
                 }
                 else {
@@ -63,7 +62,7 @@ public:
 
             }
             else {
-                if (counter == 2 && (t[k]->x) - 10 == 480) {
+                if (((counter == 3) || (counter == 2)) && (t[k]->x) - 10 == grense) {
 
                 }
                 else {
@@ -71,10 +70,32 @@ public:
                 }
             }
     }
-    void MoveN(int dy)
+    void MoveN(int dy, int counter)
     {
+        int grense = 160;
         for (int k = 0; k < m_i; k++)
-            t[k]->y += dy;
+
+
+            if (k == 0) {
+                if (((counter == 0) || (counter == 1)) && (t[k]->y) - 10 == grense) {
+
+                }
+                else {
+                    t[k]->y += dy;
+                }
+
+            }
+            else if ((k > 0) && (t[k - 1]->y) - (t[k]->y) <= 10) {
+
+            }
+            else {
+                if (((counter == 0) || (counter == 1)) && (t[k]->y) - 10 == grense) {
+
+                }
+                else {
+                    t[k]->y += dy;
+                }
+            }
     }
     void Clear()
     {
@@ -91,6 +112,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 int counter = 0;
 int n = 0;
 static CarList carlistN, carlistW;
+int probW = 0, probN = 0;
 
 
 
@@ -99,6 +121,8 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK    SetProb(HWND, UINT, WPARAM, LPARAM);
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -219,12 +243,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         break;
 
+
     case WM_LBUTTONDOWN:
     {
-        carlistN.push(new Car(n++, nx, ny));
+        DialogBox(hInst, MAKEINTRESOURCE(129), hWnd, SetProb);
+        InvalidateRect(hWnd, 0, true);
+        /*
         carlistW.push(new Car(n++, wx, wy));
         
         InvalidateRect(hWnd, 0, true);
+        */
         break;
     }
     case WM_RBUTTONDOWN:
@@ -237,12 +265,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         break;
     }
+    
     case WM_TIMER:
         switch (wParam)
         {    
         case 0:
             carlistW.MoveW(10,counter);
-            carlistN.MoveN(10);
+            carlistN.MoveN(10,counter);
             InvalidateRect(hWnd, 0, true);
             break;
 
@@ -255,6 +284,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         default:
             break;
         }
+
         
     case WM_COMMAND:
         {
@@ -268,6 +298,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
+           
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
@@ -417,6 +448,41 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_COMMAND:
         if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+        {
+            EndDialog(hDlg, LOWORD(wParam));
+            return (INT_PTR)TRUE;
+        }
+        break;
+    }
+    return (INT_PTR)FALSE;
+}
+
+INT_PTR CALLBACK SetProb(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (message)
+    {
+    case WM_INITDIALOG:
+    {
+        SetWindowText(hDlg, L"Probabilitybox");
+        HWND setText = GetDlgItem(hDlg, 1005);
+        SetWindowText(hDlg, L"Write down the probabilt for the cars to spawn");
+        setText = GetDlgItem(hDlg, 1006);
+        SetWindowText(hDlg, L"West");
+        setText = GetDlgItem(hDlg, 1007);
+        SetWindowText(hDlg, L"North");
+        return (INT_PTR)TRUE;
+    }
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK)
+        {
+            probW = GetDlgItemInt(hDlg, 1005, 0, 0);
+            probN = GetDlgItemInt(hDlg, 1006, 0, 0);
+
+            EndDialog(hDlg, LOWORD(wParam));
+            return (INT_PTR)TRUE;
+        }
+        else if (LOWORD(wParam) == IDCANCEL)
         {
             EndDialog(hDlg, LOWORD(wParam));
             return (INT_PTR)TRUE;
