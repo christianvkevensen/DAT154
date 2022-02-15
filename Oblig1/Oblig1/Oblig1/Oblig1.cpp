@@ -3,6 +3,8 @@
 
 #include "framework.h"
 #include "Oblig1.h"
+#include <stdlib.h>     /* srand, rand */
+
 #define MAX_LOADSTRING 100
 
 class Car
@@ -112,7 +114,8 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 int counter = 0;
 int n = 0;
 static CarList carlistN, carlistW;
-int probW = 0, probN = 0;
+static int probW = 50, probN = 50;
+
 
 
 
@@ -230,6 +233,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+
     static int n = 1;
     static int wx = 10, wy = 250;
     static int nx = 550, ny = 0;
@@ -238,15 +242,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
 
     case WM_CREATE:
-        SetTimer(hWnd, 0, 100, (TIMERPROC)NULL);
-        SetTimer(hWnd, 1, 3005, (TIMERPROC)NULL);
+        SetTimer(hWnd, 0, 300, (TIMERPROC)NULL);
+        SetTimer(hWnd, 1, 1000, (TIMERPROC)NULL);
+        SetTimer(hWnd, 2, 3005, (TIMERPROC)NULL);
+
 
         break;
 
 
     case WM_LBUTTONDOWN:
     {
-        DialogBox(hInst, MAKEINTRESOURCE(129), hWnd, SetProb);
+        DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, SetProb);
         InvalidateRect(hWnd, 0, true);
         /*
         carlistW.push(new Car(n++, wx, wy));
@@ -255,37 +261,70 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         */
         break;
     }
-    case WM_RBUTTONDOWN:
-    {
+    
+    case WM_TIMER:
         RECT screen;
         GetClientRect(hWnd, &screen);
 
-        carlistN.push(new Car(n++, screen.right/2, screen.top));
-        InvalidateRect(hWnd, 0, true);
-
-        break;
-    }
-    
-    case WM_TIMER:
         switch (wParam)
         {    
         case 0:
-            carlistW.MoveW(10,counter);
-            carlistN.MoveN(10,counter);
+            carlistW.MoveW(10, counter);
+            carlistN.MoveN(10, counter);
             InvalidateRect(hWnd, 0, true);
             break;
 
         case 1:
+
+            if (probW >= rand() % 100 + 1) {
+                carlistW.push(new Car(n++, wx, wy));
+            }
+            if (probW >= rand() % 100 + 1) {
+                carlistN.push(new Car(n++, screen.right / 2, screen.top));
+            }
+
+            InvalidateRect(hWnd, 0, true);
+            break;
+
+        case 2:
             counter = (counter + 1) % 4;
             InvalidateRect(hWnd, 0, true);
 
             break;
-
         default:
             break;
         }
 
-        
+    case WM_KEYDOWN:
+    {
+        switch (wParam)
+        {
+        case VK_LEFT:
+        if (probW > 9) {
+            probW = probW - 10;
+        }
+        break;
+
+        case VK_RIGHT:
+        if (probW < 91) {
+            probW = probW + 10;
+        }
+        break;
+
+        case VK_UP:
+        if (probN < 91) {
+            probN = probN + 10;
+        }
+        break;
+
+        case VK_DOWN:
+        if (probN > 9) {
+            probN = probN - 10;
+        }
+        break;
+        }
+    }
+
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -426,7 +465,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         KillTimer(hWnd, 0);
         KillTimer(hWnd, 1);
-       
+        KillTimer(hWnd, 2);
+
         carlistN.Clear();
         carlistW.Clear();
 
@@ -465,19 +505,25 @@ INT_PTR CALLBACK SetProb(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_INITDIALOG:
     {
         SetWindowText(hDlg, L"Probabilitybox");
-        HWND setText = GetDlgItem(hDlg, 1005);
-        SetWindowText(hDlg, L"Write down the probabilt for the cars to spawn");
-        setText = GetDlgItem(hDlg, 1006);
-        SetWindowText(hDlg, L"West");
-        setText = GetDlgItem(hDlg, 1007);
-        SetWindowText(hDlg, L"North");
         return (INT_PTR)TRUE;
     }
     case WM_COMMAND:
         if (LOWORD(wParam) == IDOK)
         {
-            probW = GetDlgItemInt(hDlg, 1005, 0, 0);
-            probN = GetDlgItemInt(hDlg, 1006, 0, 0);
+            probN = GetDlgItemInt(hDlg, IDC_EDIT1, 0, 0);
+            probW = GetDlgItemInt(hDlg, IDC_EDIT2, 0, 0);
+            if (probW > 100) {
+                probW = 100;
+            }
+            if (probW < 0) {
+                probW = 0;
+            }
+            if (probN > 100) {
+                probN = 100;
+            }
+            if (probN < 0) {
+                probN = 0;
+            }
 
             EndDialog(hDlg, LOWORD(wParam));
             return (INT_PTR)TRUE;
