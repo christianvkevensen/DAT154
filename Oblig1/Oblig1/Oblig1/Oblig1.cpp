@@ -236,8 +236,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     static int n = 1;
     static int wx = 10, wy = 250;
-    static int nx = 550, ny = 0;
-    static int wStopp = 400;
     switch (message)
     {
 
@@ -279,7 +277,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             if (probW >= rand() % 100 + 1) {
                 carlistW.push(new Car(n++, wx, wy));
             }
-            if (probW >= rand() % 100 + 1) {
+            if (probN >= rand() % 100 + 1) {
                 carlistN.push(new Car(n++, screen.right / 2, screen.top));
             }
 
